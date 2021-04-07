@@ -1,4 +1,3 @@
-scene.setBackgroundColor(0);
 tiles.setTilemap(tilemap`maze1`);
 
 // Create some additional spritekinds
@@ -62,6 +61,7 @@ for (let i = 0; i < rows*2+1; i++) {
     for (let j = 0; j < cols*2+1; j++) {
         if (!tiles.tileAtLocationEquals(tiles.getTileLocation(j, i), assets.tile`mazeTile`)) {
             tiles.setWallAt(tiles.getTileLocation(j, i), true);
+            tiles.setTileAt(tiles.getTileLocation(j, i), assets.tile`wallTile`);
         }
     }
 }
@@ -81,13 +81,75 @@ switch (ranEnd) {
         break;
 }
 
-// Create player and player movement
-let player = sprites.create(assets.image`Player`, SpriteKind.Player);
+// Create player
+let player = sprites.create(assets.image`PlayerRight`, SpriteKind.Player);
 let startX = 24;
 let startY = 24;
 player.setPosition(startX, startY);
 controller.moveSprite(player);
 scene.cameraFollowSprite(player);
+
+// Player movement
+enum PlayerPos {
+    Right,
+    Left,
+    Down,
+    Up
+}
+
+let playerPos = PlayerPos.Down;
+let playerPrePos = PlayerPos.Up;
+let podminka = true;
+
+game.onUpdate(function() {
+    if (player.vx > 0) {
+        playerPos = PlayerPos.Right;
+    }
+    else if (player.vx < 0) {
+        playerPos = PlayerPos.Left;
+    }
+    if (player.vy > 0) {
+        playerPos = PlayerPos.Down;
+    }
+    else if (player.vy < 0) {
+        playerPos = PlayerPos.Up;
+    }
+
+    if (playerPrePos != playerPos) {
+        switch (playerPos) {
+            case PlayerPos.Right:
+                animation.runImageAnimation(player, assets.animation`PlayerWalkRight`, 120, true);
+                break;
+            case PlayerPos.Left:
+                animation.runImageAnimation(player, assets.animation`PlayerWalkLeft`, 120, true);
+                break;
+            case PlayerPos.Down:
+                animation.runImageAnimation(player, assets.animation`PlayerWalkDown`, 120, true);
+                break;
+            case PlayerPos.Up:
+                animation.runImageAnimation(player, assets.animation`PlayerWalkUp`, 120, true);
+                break;
+        }
+    }
+
+    else if (player.vx == 0 && player.vy == 0) {
+        switch (playerPos) {
+            case PlayerPos.Right:
+                player.setImage(assets.image`PlayerRight`);
+                break;
+            case PlayerPos.Left:
+                player.setImage(assets.image`PlayerLeft`);
+                break;
+            case PlayerPos.Down:
+                player.setImage(assets.image`PlayerFront`);
+                break;
+            case PlayerPos.Up:
+                player.setImage(assets.image`PlayerBack`);
+                break;
+        }
+    }
+    playerPrePos = playerPos;
+})
 
 // Winning the game
 scene.onOverlapTile(SpriteKind.Player, assets.tile`finish`, function(sprite: Sprite, location: tiles.Location) {

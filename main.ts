@@ -2,7 +2,7 @@ tiles.setTilemap(tilemap`maze1`);
 
 // Create some additional spritekinds
 namespace SpriteKind {
-    export const Timer = SpriteKind.create();
+    export const Clock = SpriteKind.create();
 }
 
 let newMaze: Array<Array<number>> = [];
@@ -26,9 +26,12 @@ function unvisitedCells(x:number, y:number) {
     return unvisited;
 }
 
+let createClock = true;
+let clocks:Sprite[] = [];
+let clocksPositions:Array<Array<number>> = [];
+
 // Maze generation algoritm
 let count = 0;
-let cells:Array<Array<number>> = [];
 function generateMaze(x:number, y:number) {
     let unvisited;
     let ranCell;
@@ -38,8 +41,15 @@ function generateMaze(x:number, y:number) {
         newMaze[y][x] = 1;
         unvisited = unvisitedCells(x, y);
         if (unvisited.length == 0) {
+            if (createClock) { // clock
+                clocks.push(sprites.create(assets.image`clock`, SpriteKind.Clock));
+                clocksPositions.push([x*2+1, y*2+1])
+                createClock = false;
+            }
             return;
         }
+        createClock = true; // clock
+
         count += 1;
         ranCell = randint(0, unvisited.length-1);
         // Adding the generated random paths into the tilemap
@@ -81,6 +91,17 @@ switch (ranEnd) {
         break;
 }
 
+// Create clocks
+for (let i = 0; i < clocks.length; i++) {
+    if (!tiles.tileAtLocationEquals(tiles.getTileLocation(clocksPositions[i][0], clocksPositions[i][1]), assets.tile`finish`)) {
+        clocks[i].setPosition(clocksPositions[i][0]*16+8, clocksPositions[i][1]*16+8);
+        animation.runImageAnimation(clocks[i], assets.animation`ClockAnimation`, 120, true);
+    }
+    else{
+        clocks[i].destroy();
+    }
+}
+
 // Create player
 let player = sprites.create(assets.image`PlayerRight`, SpriteKind.Player);
 let startX = 24;
@@ -89,7 +110,6 @@ player.setPosition(startX, startY);
 controller.moveSprite(player);
 scene.cameraFollowSprite(player);
 
-// Player movement
 enum PlayerPos {
     Right,
     Left,
@@ -115,6 +135,7 @@ game.onUpdate(function() {
         playerPos = PlayerPos.Up;
     }
 
+    // Player Animations
     if (playerPrePos != playerPos) {
         switch (playerPos) {
             case PlayerPos.Right:
@@ -156,18 +177,16 @@ scene.onOverlapTile(SpriteKind.Player, assets.tile`finish`, function(sprite: Spr
     game.over(true, effects.starField);
 })
 
-// box that starts the timer
-let hidden = sprites.create(assets.image`startTimer`, SpriteKind.Timer);
-hidden.z = -1;
-//hidden.setFlag(SpriteFlag.Invisible, true);
-if (tiles.tileAtLocationEquals(tiles.getTileLocation(1, 2), assets.tile`mazeTile`)) {
-    hidden.setPosition(24, 40);
-}
-else hidden.setPosition(40, 24);
+let time = 20;
+let clockTimeChange = 3;
+info.startCountdown(time);
 
-// If player collides with timer start or reset the time
-sprites.onOverlap(SpriteKind.Player, SpriteKind.Timer, function(sprite: Sprite, otherSprite: Sprite) {
-    info.startCountdown(25);
+// Player collision with clock
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Clock, function(sprite: Sprite, otherSprite: Sprite) {
+    otherSprite.startEffect(effects.fire);
+    otherSprite.destroy();
+    info.startCountdown(time-game.runtime()/1000+clockTimeChange);
+    time += clockTimeChange;
 })
 
 game.splash("Find the end of the maze"); 

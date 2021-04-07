@@ -22,6 +22,12 @@
         "tilemapTile": true,
         "displayName": "mazeTile"
     },
+    "tile4": {
+        "data": "hwQQABAAAAAAAAAAAAAAAAAAiIiICAAAAID///+PAAAA+JmZmfkIAICfmZmZmY8AgJ+ZmZmZjwCAn5mZmZmPAICf//+ZmY8AgJ+Z+ZmZjwCAn5n5mZmPAICfmZmZmY8AAPiZmZn5CAAAgP///48AAAAAiIiICAAAAAAAAAAAAAAAAAAAAAAAAA==",
+        "mimeType": "image/x-mkcd-f4",
+        "tilemapTile": true,
+        "displayName": "clockck"
+    },
     "maze1": {
         "id": "maze1",
         "mimeType": "application/mkcd-tilemap",

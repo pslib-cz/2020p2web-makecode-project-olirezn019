@@ -29,6 +29,11 @@
         "mimeType": "image/x-mkcd-f4",
         "displayName": "clock"
     },
+    "image7": {
+        "data": "hwQQABAAAAAA//8AAAAAAPAAAP8AAAAADwAAAA8AAAD/////DwAA8F9VVVX1DwDwHxEREVX/AP9fVVVVUfX/9V9VVVUVVVX1X1VVVVVVVfVfVVVVVfX/9V9VVVVV/wD/X1VVVfUPAPD/////DwAA8A8AAAAPAAAA8AAA/wAAAAAA//8AAAAAAA==",
+        "mimeType": "image/x-mkcd-f4",
+        "displayName": "Finish"
+    },
     "anim1": {
         "namespace": "myAnimations",
         "id": "anim1",

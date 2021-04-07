@@ -3,6 +3,7 @@ tiles.setTilemap(tilemap`maze1`);
 // Create some additional spritekinds
 namespace SpriteKind {
     export const Clock = SpriteKind.create();
+    export const Finish = SpriteKind.create();
 }
 
 let newMaze: Array<Array<number>> = [];
@@ -79,15 +80,17 @@ for (let i = 0; i < rows*2+1; i++) {
 // Create end of the maze
 // in one of the other corners of the maze
 let ranEnd = randint(0, 2);
+let finish = sprites.create(assets.image`Finish`, SpriteKind.Finish);
+finish.setPosition((cols*2-1)*16+8, (rows*2-1)*16+8);
 switch (ranEnd) {
     case 0:
-        tiles.setTileAt(tiles.getTileLocation(cols*2-1, rows*2-1), assets.tile`finish`);
+        finish.setPosition((cols*2-1)*16+8, (rows*2-1)*16+8);
         break;
     case 1:
-        tiles.setTileAt(tiles.getTileLocation(cols*2-1, 1), assets.tile`finish`);
+        finish.setPosition((cols*2-1)*16+8, 1*16+8);
         break;
     case 2:
-        tiles.setTileAt(tiles.getTileLocation(1, rows*2-1), assets.tile`finish`);
+        finish.setPosition(1*16+8, (rows*2-1)*16+8);
         break;
 }
 
@@ -173,7 +176,7 @@ game.onUpdate(function() {
 })
 
 // Winning the game
-scene.onOverlapTile(SpriteKind.Player, assets.tile`finish`, function(sprite: Sprite, location: tiles.Location) {
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Finish, function(sprite: Sprite, otherSprite: Sprite) {
     game.over(true, effects.starField);
 })
 
@@ -186,6 +189,7 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Clock, function(sprite: Sprite, 
     otherSprite.startEffect(effects.fire);
     otherSprite.destroy();
     info.startCountdown(time-game.runtime()/1000+clockTimeChange);
+    info.changeScoreBy(1);
     time += clockTimeChange;
 })
 

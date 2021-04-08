@@ -96,7 +96,7 @@ switch (ranEnd) {
 
 // Create clocks
 for (let i = 0; i < clocks.length; i++) {
-    if (!tiles.tileAtLocationEquals(tiles.getTileLocation(clocksPositions[i][0], clocksPositions[i][1]), assets.tile`finish`)) {
+    if (finish.x != clocksPositions[i][0]*16+8 && finish.y != clocksPositions[i][1]*16+8) {
         clocks[i].setPosition(clocksPositions[i][0]*16+8, clocksPositions[i][1]*16+8);
         animation.runImageAnimation(clocks[i], assets.animation`ClockAnimation`, 120, true);
     }
